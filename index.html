@@ -356,9 +356,11 @@ body {
 /* ── CARD VIEWER ───────────────────────────────────────────────────────── */
 #screen-view {
   min-height: 100vh;
-  align-items: center; justify-content: center;
-  padding: 20px 16px 80px;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px 16px 100px;
   background: #f5f0f8;
+  overflow-y: auto;
 }
 
 .card-stage { position: relative; width: 100%; max-width: 980px; }
@@ -649,7 +651,7 @@ body {
   background: rgba(255,255,255,0.92);
   backdrop-filter: blur(12px);
   border-top: 1px solid rgba(0,0,0,0.06);
-  z-index: 50; align-items: center;
+  z-index: 150; align-items: center;
 }
 .card-nav-btn {
   flex: 1; padding: 12px;
@@ -1492,8 +1494,11 @@ function encodeCardPayload(card) {
   return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
 }
 function decodeCardPayload(payload) {
-  const cleaned = String(payload || '').trim().replace(/\s/g, '+');
-  const normalized = cleaned.replace(/-/g, '+').replace(/_/g, '/');
+  // Strip whitespace, then convert URL-safe base64 (- and _) back to standard
+  const normalized = String(payload || '').trim()
+    .replace(/\s/g, '')
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
   const padded = normalized + '='.repeat((4 - normalized.length % 4) % 4);
   const json = new TextDecoder().decode(base64ToBytes(padded));
   return JSON.parse(json);
@@ -1522,10 +1527,29 @@ async function copyText(text) {
   return ok;
 }
 function downloadCardHtml(card) {
-  const payload = JSON.stringify(card).replace(/</g, '\\u003c');
-  const payloadScript = `<script>window.__MEMO_CARD_PAYLOAD__=${payload};<\/script>\n`;
-  const source = document.documentElement.outerHTML.replace(/<script>window\.__MEMO_CARD_PAYLOAD__=[\s\S]*?<\/script>\s*/g, '');
-  const html = '<!DOCTYPE html>\n' + source.replace('</body>', `${payloadScript}</body>`);
+  // Encode the card into a ?card= param, then inject a self-redirect script
+  // into a clean copy of the source HTML. When opened locally, the script
+  // rewrites location so the router picks it up — arrows and all features work.
+  let payload;
+  try { payload = encodeCardPayload(card); } catch(e) { showToast('Could not encode card'); return; }
+
+  // Get the original source HTML (strip any previous payload injections)
+  let source = document.documentElement.outerHTML;
+  source = source.replace(/<script[^>]*>[\s\S]*?window\.__MEMO_CARD_REDIRECT[\s\S]*?<\/script>\s*/gi, '');
+
+  // Inject a redirect script that fires before DOMContentLoaded listener
+  const redirectScript = `<script>
+(function(){
+  var p = ${JSON.stringify(payload)};
+  if (!location.search.includes('card=')) {
+    var base = location.href.split('#')[0].split('?')[0];
+    location.replace(base + '?card=' + p);
+  }
+  window.__MEMO_CARD_REDIRECT = true;
+})();
+<\/script>`;
+
+  const html = '<!DOCTYPE html>\n' + source.replace('</head>', redirectScript + '</head>');
   const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -1534,7 +1558,7 @@ function downloadCardHtml(card) {
   document.body.appendChild(a);
   a.click();
   a.remove();
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 function updateShareNote(shareUrl) {
   const note = document.getElementById('share-note');
@@ -1846,15 +1870,6 @@ function viewCard(card) {
 
 // ── ROUTER ───────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
-  if (window.__MEMO_CARD_PAYLOAD__) {
-    try {
-      viewCard(window.__MEMO_CARD_PAYLOAD__);
-      return;
-    } catch(e) {
-      showError();
-      return;
-    }
-  }
   const params = new URLSearchParams(location.search);
   const hashParams = new URLSearchParams(location.hash.replace(/^#/, ''));
   // Prefer query param (?card=) — hash (#card=) kept for backwards compat
