@@ -725,6 +725,7 @@ body {
   line-height: 1.45;
 }
 .share-note.warn { color: #8a5a14; }
+.share-note a { color: inherit; font-weight: 600; }
 .made-link { display: block; text-align: center; margin-top: 1rem; font-size: 0.78rem; color: rgba(0,0,0,0.35); }
 
 /* ── TOAST ─────────────────────────────────────────────────────────────── */
@@ -1499,7 +1500,7 @@ function decodeCardPayload(payload) {
 }
 function makeShareUrl(card) {
   const base = location.href.split('#')[0].split('?')[0];
-  return `${base}#card=${encodeCardPayload(card)}`;
+  return `${base}?card=${encodeCardPayload(card)}`;
 }
 async function copyText(text) {
   if (navigator.clipboard && window.isSecureContext) {
@@ -1539,13 +1540,18 @@ function updateShareNote(shareUrl) {
   const note = document.getElementById('share-note');
   const hasPhotos = (state.slides || []).some(slide => (slide.photos || []).length);
   const longLink = shareUrl.length > 7000;
-  note.classList.toggle('warn', longLink);
-  if (longLink) {
-    note.textContent = 'This card has enough embedded photo data that some messaging apps may shorten or break the link. Use Download HTML for the safest share or GitHub Pages upload.';
+  const isLocal = location.protocol === 'file:';
+
+  note.classList.toggle('warn', longLink || isLocal);
+
+  if (isLocal) {
+    note.innerHTML = '<strong>Running as a local file:</strong> To share this link with someone else, upload memo-card.html to <a href="https://app.netlify.com/drop" target="_blank" style="color:inherit">Netlify Drop</a> or GitHub Pages. The link will then work for anyone. You can also use <strong>Download HTML</strong> to send a self-contained card file directly.';
+  } else if (longLink) {
+    note.textContent = 'Large photos detected — some messaging apps may truncate long links. Use Download HTML for the safest share.';
   } else if (hasPhotos) {
-    note.textContent = 'This link stores the card in the URL hash so it works on GitHub Pages. For the most reliable photo-heavy share, Download HTML also creates a standalone card file.';
+    note.textContent = 'Link ready! The card and photos are encoded in the URL. For very large photos, Download HTML is also available.';
   } else {
-    note.textContent = 'GitHub Pages ready: the card data is stored after #card=, so the static page can open it without a server.';
+    note.textContent = 'Link ready to share! Anyone with it can open the card.';
   }
 }
 
@@ -1851,7 +1857,8 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   const params = new URLSearchParams(location.search);
   const hashParams = new URLSearchParams(location.hash.replace(/^#/, ''));
-  const cardParam = hashParams.get('card') || params.get('card');
+  // Prefer query param (?card=) — hash (#card=) kept for backwards compat
+  const cardParam = params.get('card') || hashParams.get('card');
   if (cardParam) {
     try {
       const card = decodeCardPayload(cardParam);
