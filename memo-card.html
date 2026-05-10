@@ -1,0 +1,1880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Card for Someone Special 💐</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&amp;family=DM+Sans:wght@300;400;500&amp;display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --font-serif: 'Lora', Georgia, serif;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --pink: #E8638C;
+  --pink-light: #FDE8F0;
+  --pink-dark: #C04070;
+  --purple: #7C6FCD;
+  --radius: 20px;
+  --shadow: 0 8px 40px rgba(0,0,0,0.10);
+  --photo-roses: url("https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1400&q=80");
+  --photo-golden: url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80");
+  --photo-garden: url("https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=1400&q=80");
+  --photo-ocean: url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=80");
+  --photo-lavender: url("https://images.unsplash.com/photo-1499002238440-d264edd596ec?auto=format&fit=crop&w=1400&q=80");
+  --photo-sunset: url("https://images.unsplash.com/photo-1472120435266-53107fd0c44a?auto=format&fit=crop&w=1400&q=80");
+  --intro-photo: var(--photo-roses);
+}
+
+body {
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  background: #fdf8fa;
+  color: #2a1a22;
+  overflow-x: hidden;
+}
+
+/* ── SCREEN SYSTEM ─────────────────────────────────────────────────────── */
+.screen { display: none; min-height: 100vh; }
+.screen.active {
+  display: flex;
+  flex-direction: column;
+  animation: screenIn 0.35s ease both;
+}
+@keyframes screenIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── PROGRESS BAR ──────────────────────────────────────────────────────── */
+.progress-bar {
+  height: 3px;
+  background: rgba(0,0,0,0.08);
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--pink);
+  transition: width 0.4s ease;
+  border-radius: 0 2px 2px 0;
+}
+
+/* ── QUESTION SCREEN ───────────────────────────────────────────────────── */
+.q-screen {
+  display: flex;
+  flex-direction: column;
+  padding: 60px 24px 100px;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  transition: background 0.5s ease;
+  position: relative;
+}
+
+.q-inner { max-width: 620px; width: 100%; }
+
+.q-title {
+  font-family: var(--font-serif);
+  font-size: 1.85rem;
+  font-weight: 400;
+  line-height: 1.3;
+  color: #1a0e18;
+  margin-bottom: 1.75rem;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.q-emoji { font-size: 1.5rem; flex-shrink: 0; margin-top: 2px; }
+
+/* ── INTRO / EVENT PICKER ──────────────────────────────────────────────── */
+.intro-card { text-align: center; padding-bottom: 1rem; }
+.intro-hero {
+  width: min(100%, 420px);
+  aspect-ratio: 16 / 9;
+  margin: 0 auto 1.5rem;
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.45)),
+    var(--intro-photo);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 18px 50px rgba(80, 45, 72, 0.16);
+  overflow: hidden;
+  position: relative;
+}
+.intro-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 18% 20%, rgba(255,255,255,0.55), transparent 30%);
+}
+.intro-card h1 {
+  font-family: var(--font-serif);
+  font-size: 2.45rem;
+  font-weight: 400;
+  color: #1a0e18;
+  margin-bottom: 0.65rem;
+  line-height: 1.2;
+}
+.intro-copy {
+  color: rgba(0,0,0,0.56);
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 430px;
+  margin: 0 auto 1.4rem;
+}
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+.event-card {
+  border: 1.5px solid rgba(0,0,0,0.1);
+  background: rgba(255,255,255,0.78);
+  border-radius: 14px;
+  padding: 13px 10px;
+  font-family: var(--font-sans);
+  color: #2a1a22;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.event-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.09); }
+.event-card.selected {
+  border-color: var(--pink);
+  box-shadow: 0 0 0 4px rgba(232,99,140,0.13);
+}
+.event-emoji { display: block; font-size: 1.45rem; margin-bottom: 5px; }
+.event-label { display: block; font-size: 0.86rem; font-weight: 500; line-height: 1.25; }
+.intro-fields {
+  display: grid;
+  gap: 12px;
+  margin-top: 1rem;
+  text-align: left;
+}
+.field-label {
+  display: block;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(0,0,0,0.46);
+  margin-bottom: 6px;
+}
+.text-input {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid rgba(0,0,0,0.12);
+  border-radius: 12px;
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  color: #1a0e18;
+  background: rgba(255,255,255,0.9);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.text-input:focus {
+  border-color: var(--pink);
+  box-shadow: 0 0 0 3px rgba(232,99,140,0.14);
+}
+.custom-event-wrap { display: none; }
+.custom-event-wrap.visible { display: block; }
+
+/* ── SUGGESTION BUBBLES ────────────────────────────────────────────────── */
+.suggestions { margin-bottom: 1rem; display: flex; flex-direction: column; gap: 10px; }
+
+.bubble {
+  padding: 14px 20px;
+  border-radius: 18px 18px 18px 4px;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #2a1a22;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  border: 1.5px solid transparent;
+}
+.bubble:nth-child(2) { border-radius: 18px 18px 4px 18px; align-self: flex-end; max-width: 85%; }
+.bubble:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+.bubble.selected { border-color: currentColor; font-weight: 500; }
+
+/* ── TEXTAREA ──────────────────────────────────────────────────────────── */
+.q-textarea-wrap { position: relative; margin-top: 0.5rem; }
+.q-textarea {
+  width: 100%;
+  padding: 16px 20px;
+  border: 1.5px solid rgba(0,0,0,0.12);
+  border-radius: 14px;
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #2a1a22;
+  background: rgba(255,255,255,0.7);
+  resize: none;
+  min-height: 100px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  backdrop-filter: blur(4px);
+}
+.q-textarea:focus { border-color: var(--pink); box-shadow: 0 0 0 3px rgba(232,99,140,0.15); }
+.q-textarea::placeholder { color: rgba(0,0,0,0.3); font-style: italic; }
+
+/* ── PHOTO UPLOAD (in questions) ───────────────────────────────────────── */
+.photo-upload-zone {
+  margin-top: 1rem;
+  border: 2px dashed rgba(0,0,0,0.15);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: rgba(255,255,255,0.5);
+}
+.photo-upload-zone:hover { border-color: var(--pink); background: rgba(232,99,140,0.04); }
+.photo-upload-zone p { font-size: 0.88rem; color: rgba(0,0,0,0.45); }
+.photo-upload-zone span { font-size: 1.6rem; display: block; margin-bottom: 6px; }
+.photo-input { display: none; }
+
+.photo-thumbs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.photo-thumb-wrap {
+  position: relative; width: 72px; height: 72px;
+  border-radius: 10px; overflow: hidden;
+  border: 2px solid rgba(232,99,140,0.3);
+  flex-shrink: 0;
+}
+.photo-thumb-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.remove-thumb {
+  position: absolute; top: 2px; right: 2px;
+  width: 18px; height: 18px;
+  background: rgba(0,0,0,0.55); color: white;
+  border: none; border-radius: 50%; cursor: pointer;
+  font-size: 12px; line-height: 18px; text-align: center;
+  display: none; align-items: center; justify-content: center;
+  padding: 0;
+}
+.photo-thumb-wrap:hover .remove-thumb { display: flex; }
+
+/* ── NAV BUTTONS ───────────────────────────────────────────────────────── */
+.nav-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  display: flex; gap: 0;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(0,0,0,0.06);
+  z-index: 50;
+}
+.nav-btn {
+  flex: 1; padding: 18px;
+  border: none; background: transparent;
+  font-family: var(--font-sans); font-size: 0.95rem;
+  cursor: pointer; color: rgba(0,0,0,0.45);
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.nav-btn.primary {
+  background: var(--pink); color: white; font-weight: 500;
+}
+.nav-btn.primary:hover { background: var(--pink-dark); }
+.nav-btn.back-btn:hover { color: rgba(0,0,0,0.8); background: rgba(0,0,0,0.04); }
+.nav-btn.skip-btn { color: var(--purple); font-weight: 500; }
+.nav-btn.skip-btn:hover { background: rgba(124,111,205,0.06); }
+.nav-btn:disabled { opacity: 0.35; cursor: not-allowed; background: rgba(0,0,0,0.06) !important; color: rgba(0,0,0,0.3) !important; }
+
+/* ── DESIGN PICKER ─────────────────────────────────────────────────────── */
+#screen-design {
+  background: linear-gradient(160deg, #f5eef8 0%, #fdf0f4 100%);
+  align-items: center; justify-content: center;
+  padding: 60px 24px 100px;
+}
+.design-inner { max-width: 560px; width: 100%; }
+.design-inner h2 {
+  font-family: var(--font-serif); font-size: 1.8rem; font-weight: 400;
+  text-align: center; margin-bottom: 2rem; color: #1a0e18;
+}
+
+.design-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.design-card {
+  border-radius: 14px; overflow: hidden;
+  border: 2.5px solid transparent;
+  cursor: pointer; transition: all 0.2s;
+  background: white;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+.design-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.13); }
+.design-card.selected { border-color: var(--pink); box-shadow: 0 0 0 4px rgba(232,99,140,0.15); }
+.design-preview {
+  height: 120px; width: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  color: white;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.45);
+}
+.design-preview::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.22));
+}
+.design-preview span { position: relative; z-index: 1; }
+.design-card.selected .design-preview::before {
+  content: "Selected";
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  z-index: 2;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.9);
+  color: var(--pink-dark);
+  text-shadow: none;
+  font-size: 0.68rem;
+  font-weight: 500;
+}
+.design-name {
+  padding: 8px 10px; text-align: center;
+  font-size: 0.82rem; color: #2a1a22; font-weight: 500;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+.design-nav { margin-top: 2rem; display: flex; justify-content: center; }
+.btn-continue {
+  padding: 14px 40px;
+  background: var(--pink); color: white;
+  border: none; border-radius: 50px;
+  font-family: var(--font-sans); font-size: 1rem; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-continue:hover { background: var(--pink-dark); transform: translateY(-1px); }
+.btn-continue:disabled { background: rgba(0,0,0,0.15); color: rgba(0,0,0,0.3); cursor: not-allowed; transform: none; }
+
+/* Design preview photos */
+.dp-roses .design-preview { background-image: var(--photo-roses); }
+.dp-golden .design-preview { background-image: var(--photo-golden); }
+.dp-garden .design-preview { background-image: var(--photo-garden); }
+.dp-ocean .design-preview { background-image: var(--photo-ocean); }
+.dp-lavender .design-preview { background-image: var(--photo-lavender); }
+.dp-sunset .design-preview { background-image: var(--photo-sunset); }
+
+/* ── CARD VIEWER ───────────────────────────────────────────────────────── */
+#screen-view {
+  min-height: 100vh;
+  align-items: center; justify-content: center;
+  padding: 20px 16px 80px;
+  background: #f5f0f8;
+}
+
+.card-stage { position: relative; width: 100%; max-width: 980px; }
+
+.memo-card {
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 12px 60px rgba(0,0,0,0.13);
+  overflow: hidden;
+  min-height: 560px;
+  display: flex; flex-direction: column;
+  position: relative;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.slide-motion { animation: slideChange 0.42s ease both; }
+@keyframes slideChange {
+  from { opacity: 0; transform: translateX(18px) scale(0.99); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+/* Cover slide */
+.card-cover {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  position: relative; overflow: hidden;
+  min-height: 560px;
+}
+.card-cover-bg {
+  position: absolute; inset: 0;
+  z-index: 0;
+  background-size: cover !important;
+  background-position: center !important;
+}
+.card-cover-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.36), rgba(255,255,255,0.82));
+}
+.card-cover-content {
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 1px 18px rgba(255,255,255,0.7);
+}
+.card-cover .to-label {
+  font-family: var(--font-sans);
+  font-size: 0.85rem; letter-spacing: 0.12em; text-transform: uppercase;
+  margin-bottom: 0.5rem; opacity: 0.6;
+}
+.card-cover .to-name {
+  font-family: var(--font-serif); font-size: 4rem;
+  font-weight: 400; line-height: 1.2; margin-bottom: 1.5rem;
+}
+.card-cover .tap-hint {
+  font-size: 1rem; opacity: 0.65;
+  display: flex; align-items: center; gap: 6px;
+  justify-content: center;
+}
+.tap-pulse {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: currentColor; animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+/* Inner slides */
+.card-slide {
+  flex: 1;
+  min-height: 560px;
+}
+.split-slide {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0;
+}
+.photo-panel,
+.message-panel {
+  min-height: 560px;
+}
+.photo-panel {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.28)),
+    var(--card-photo);
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+.photo-main-button {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: zoom-in;
+  display: block;
+}
+.photo-main-button img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+.photo-main-button:hover img { transform: scale(1.025); }
+.photo-actions {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  display: flex;
+  gap: 8px;
+  z-index: 3;
+}
+.photo-action-btn {
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255,255,255,0.45);
+  border-radius: 999px;
+  background: rgba(20,16,20,0.5);
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  backdrop-filter: blur(10px);
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+.photo-action-btn:hover { transform: translateY(-1px); background: rgba(20,16,20,0.72); }
+.photo-count {
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  z-index: 3;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.86);
+  color: rgba(0,0,0,0.62);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+.photo-thumbs-view {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  z-index: 3;
+  padding-bottom: 2px;
+}
+.photo-thumb-btn {
+  width: 56px;
+  height: 56px;
+  border: 2px solid rgba(255,255,255,0.65);
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+  background: white;
+  cursor: pointer;
+  flex: 0 0 auto;
+  opacity: 0.78;
+  transition: opacity 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+}
+.photo-thumb-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-thumb-btn.active {
+  opacity: 1;
+  transform: translateY(-2px);
+  border-color: white;
+}
+.theme-photo-copy {
+  position: absolute;
+  left: 26px;
+  right: 26px;
+  bottom: 28px;
+  color: white;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.38);
+}
+.theme-photo-copy span {
+  display: block;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.78;
+  margin-bottom: 6px;
+}
+.theme-photo-copy strong {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 400;
+}
+.message-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3rem;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.9), transparent 42%),
+    var(--card-bg);
+}
+.slide-question {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  line-height: 1.34;
+  font-style: italic;
+  color: rgba(0,0,0,0.58);
+  margin-bottom: 1.4rem;
+}
+.slide-answer-area {
+  min-height: 230px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  cursor: pointer;
+  border-top: 1px solid rgba(0,0,0,0.08);
+  padding-top: 1.3rem;
+}
+.slide-answer {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  line-height: 1.62;
+  text-align: left;
+  color: #1a0e18;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+  white-space: pre-wrap;
+}
+.slide-answer.revealed { opacity: 1; transform: translateY(0); }
+.reveal-note {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: rgba(0,0,0,0.46);
+}
+.final-slide {
+  flex: 1;
+  min-height: 560px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.78)),
+    var(--card-photo);
+  background-size: cover;
+  background-position: center;
+}
+.final-content {
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 1px 18px rgba(255,255,255,0.74);
+}
+.final-greeting {
+  font-family: var(--font-serif);
+  font-size: 4.4rem;
+  line-height: 1.12;
+  font-weight: 400;
+  color: var(--card-accent, #E8638C);
+}
+.final-from {
+  margin-top: 1.3rem;
+  color: rgba(0,0,0,0.58);
+  font-size: 1.25rem;
+}
+
+.tap-reveal {
+  display: flex; flex-direction: column;
+  align-items: flex-start; justify-content: center; gap: 10px;
+  color: rgba(0,0,0,0.42);
+  transition: opacity 0.3s;
+}
+.tap-reveal.hidden { display: none; opacity: 0; pointer-events: none; }
+.tap-reveal-icon { font-size: 2.4rem; }
+.tap-reveal-text { font-size: 1.08rem; font-weight: 500; }
+
+/* Card nav */
+.card-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  display: flex; gap: 8px;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(0,0,0,0.06);
+  z-index: 50; align-items: center;
+}
+.card-nav-btn {
+  flex: 1; padding: 12px;
+  border: 1.5px solid rgba(0,0,0,0.12);
+  background: white; border-radius: 50px;
+  font-family: var(--font-sans); font-size: 0.9rem;
+  cursor: pointer; color: rgba(0,0,0,0.5);
+  transition: all 0.2s;
+}
+.card-nav-btn:hover { border-color: rgba(0,0,0,0.3); color: #1a0e18; }
+.card-nav-btn.next-btn {
+  background: var(--pink); color: white; border-color: var(--pink); font-weight: 500;
+}
+.card-nav-btn.next-btn:hover { background: var(--pink-dark); border-color: var(--pink-dark); }
+.card-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.card-dots {
+  display: flex; gap: 5px; align-items: center; justify-content: center;
+  flex: 0 0 auto; padding: 0 4px;
+}
+.card-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(0,0,0,0.15); transition: all 0.2s;
+}
+.card-dot.active { background: var(--pink); transform: scale(1.3); }
+
+.card-util { display: flex; gap: 8px; justify-content: center; margin-top: -48px; position: relative; z-index: 60; padding-bottom: 8px; }
+.util-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: white; border: 1px solid rgba(0,0,0,0.1);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: all 0.2s;
+}
+.util-btn:hover { transform: scale(1.08); box-shadow: 0 4px 16px rgba(0,0,0,0.13); }
+
+/* ── SHARE SECTION ─────────────────────────────────────────────────────── */
+#share-wrap {
+  display: none;
+  max-width: 480px; width: 100%; margin-top: 1rem;
+  background: white; border-radius: 16px; padding: 1.25rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  text-align: center;
+}
+#share-wrap h3 {
+  font-family: var(--font-serif); font-weight: 400; font-size: 1.1rem;
+  margin-bottom: 0.35rem; color: #1a0e18;
+}
+#share-wrap p { font-size: 0.82rem; color: rgba(0,0,0,0.45); margin-bottom: 0.9rem; }
+.share-row { display: flex; gap: 6px; }
+.share-row input {
+  flex: 1; padding: 9px 12px; border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 8px; font-size: 0.82rem; font-family: var(--font-sans);
+  color: rgba(0,0,0,0.6); background: #fafafa; outline: none;
+}
+.share-copy-btn {
+  padding: 9px 16px; background: var(--pink); color: white;
+  border: none; border-radius: 8px; font-family: var(--font-sans);
+  font-size: 0.82rem; font-weight: 500; cursor: pointer; white-space: nowrap;
+  transition: background 0.15s;
+}
+.share-copy-btn:hover { background: var(--pink-dark); }
+.share-copy-btn.ok { background: #2d7d46; }
+.share-copy-btn.secondary {
+  background: white;
+  color: var(--pink-dark);
+  border: 1px solid rgba(232,99,140,0.28);
+}
+.share-copy-btn.secondary:hover { background: var(--pink-light); }
+.share-note {
+  margin-top: 0.75rem;
+  color: rgba(0,0,0,0.48);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+.share-note.warn { color: #8a5a14; }
+.made-link { display: block; text-align: center; margin-top: 1rem; font-size: 0.78rem; color: rgba(0,0,0,0.35); }
+
+/* ── TOAST ─────────────────────────────────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: rgba(0,0,0,0.8); color: white;
+  padding: 10px 20px; border-radius: 50px;
+  font-size: 0.88rem; font-family: var(--font-sans);
+  opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 200;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── PHOTO LIGHTBOX ────────────────────────────────────────────────────── */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(18, 12, 18, 0.82);
+  backdrop-filter: blur(12px);
+}
+.lightbox.open { display: flex; animation: lightboxIn 0.2s ease both; }
+@keyframes lightboxIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.lightbox-panel {
+  width: min(100%, 980px);
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.lightbox-img-wrap {
+  background: rgba(255,255,255,0.08);
+  border-radius: 18px;
+  overflow: hidden;
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lightbox-img {
+  max-width: 100%;
+  max-height: 78vh;
+  object-fit: contain;
+  display: block;
+}
+.lightbox-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.lightbox-btn {
+  border: 1px solid rgba(255,255,255,0.24);
+  background: rgba(255,255,255,0.12);
+  color: white;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+.lightbox-btn:hover { background: rgba(255,255,255,0.22); transform: translateY(-1px); }
+
+/* ── THEME OVERRIDES FOR CARD ──────────────────────────────────────────── */
+.theme-roses { --card-accent: #E8638C; --card-bg: linear-gradient(135deg, rgba(255,238,245,0.96), rgba(255,214,230,0.92)); --card-photo: var(--photo-roses); }
+.theme-golden { --card-accent: #B87506; --card-bg: linear-gradient(135deg, rgba(255,248,225,0.96), rgba(255,232,164,0.92)); --card-photo: var(--photo-golden); }
+.theme-garden { --card-accent: #2D8A4E; --card-bg: linear-gradient(135deg, rgba(230,247,236,0.96), rgba(192,232,206,0.92)); --card-photo: var(--photo-garden); }
+.theme-ocean  { --card-accent: #1A6BB5; --card-bg: linear-gradient(135deg, rgba(226,240,255,0.96), rgba(184,213,255,0.92)); --card-photo: var(--photo-ocean); }
+.theme-lavender { --card-accent: #6B5CB8; --card-bg: linear-gradient(135deg, rgba(237,229,255,0.96), rgba(208,192,255,0.92)); --card-photo: var(--photo-lavender); }
+.theme-sunset { --card-accent: #B34E34; --card-bg: linear-gradient(135deg, rgba(255,240,230,0.96), rgba(255,208,176,0.92)); --card-photo: var(--photo-sunset); }
+
+.card-cover .to-name,
+.card-cover .to-label { color: var(--card-accent, #E8638C); }
+
+@media (max-width: 820px) {
+  .card-stage { max-width: 560px; }
+  #screen-view {
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 12px 12px 92px;
+  }
+  .memo-card,
+  .card-slide,
+  .card-cover,
+  .final-slide { min-height: auto; }
+  .split-slide { grid-template-columns: 1fr; }
+  .photo-panel {
+    min-height: auto;
+    aspect-ratio: 4 / 3;
+  }
+  .message-panel {
+    min-height: 360px;
+    padding: 2rem;
+  }
+  .card-cover .to-name { font-size: 3rem; }
+  .final-greeting { font-size: 3.1rem; }
+}
+
+@media (max-width: 640px) {
+  .event-grid,
+  .design-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .q-screen,
+  #screen-design { padding-left: 18px; padding-right: 18px; }
+  .q-title { font-size: 1.55rem; }
+  .intro-card h1 { font-size: 2rem; }
+  .intro-copy { font-size: 0.94rem; }
+  .bubble { max-width: 100%; font-size: 0.9rem; }
+  .bubble:nth-child(2) { max-width: 100%; }
+  .q-textarea { font-size: 1rem; min-height: 120px; }
+  .memo-card { border-radius: 18px; }
+  .photo-panel { aspect-ratio: 1 / 1; }
+  .message-panel { min-height: 330px; padding: 1.45rem; }
+  .slide-question { font-size: 1.38rem; margin-bottom: 1rem; }
+  .slide-answer-area { min-height: 190px; padding-top: 1rem; }
+  .slide-answer { font-size: 1.18rem; line-height: 1.55; }
+  .tap-reveal-icon { font-size: 2rem; }
+  .tap-reveal-text { font-size: 1rem; }
+  .card-cover { padding: 2rem 1.25rem; min-height: 430px; }
+  .card-cover .to-name { font-size: 2.5rem; }
+  .final-slide { min-height: 430px; padding: 2rem 1.25rem; }
+  .final-greeting { font-size: 2.55rem; }
+  .final-from { font-size: 1.05rem; }
+  #share-wrap { border-radius: 14px; padding: 1rem; }
+  .share-row { flex-direction: column; }
+  .share-row input,
+  .share-copy-btn { width: 100%; min-height: 44px; }
+  .card-nav-btn { font-size: 0.82rem; padding: 11px 8px; }
+  .card-dots { gap: 4px; }
+  .card-dot { width: 5px; height: 5px; }
+  .photo-actions { right: 10px; top: 10px; }
+  .photo-action-btn { width: 38px; height: 38px; }
+  .lightbox { padding: 12px; }
+  .lightbox-actions { flex-direction: column; }
+  .lightbox-btn { min-height: 44px; }
+}
+
+@media (max-width: 420px) {
+  .q-screen { padding-top: 42px; }
+  .event-grid,
+  .design-grid { gap: 8px; }
+  .event-card { padding: 11px 8px; }
+  .event-label { font-size: 0.8rem; }
+  .design-preview { height: 96px; }
+  .photo-thumb-btn { width: 48px; height: 48px; }
+  .card-nav { padding-left: 10px; padding-right: 10px; gap: 6px; }
+  .card-nav-btn { border-radius: 14px; }
+}
+
+@supports (padding: max(0px)) {
+  .nav-bar,
+  .card-nav {
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  #screen-view {
+    padding-bottom: max(92px, calc(78px + env(safe-area-inset-bottom)));
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress-bar" style="display:none;">
+  <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+</div>
+
+<!-- ── QUESTIONS SCREEN ───────────────────────────────────────────────── -->
+<div id="screen-questions" class="screen active">
+  <div class="q-screen" id="q-screen">
+    <div class="q-inner" id="q-inner"><!-- rendered by JS --></div>
+  </div>
+  <nav class="nav-bar" id="q-nav">
+    <button class="nav-btn back-btn" id="btn-back">← Back</button>
+    <button class="nav-btn skip-btn" id="btn-skip">Skip</button>
+    <button class="nav-btn primary" id="btn-next">Next →</button>
+  </nav>
+</div>
+
+<!-- ── DESIGN SCREEN ──────────────────────────────────────────────────── -->
+<div id="screen-design" class="screen">
+  <div class="design-inner">
+    <h2>Pick a photo theme</h2>
+    <div class="design-grid" id="design-grid"></div>
+    <div class="design-nav">
+      <button class="btn-continue" id="btn-design-continue" disabled>Continue →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── VIEW SCREEN ────────────────────────────────────────────────────── -->
+<div id="screen-view" class="screen" style="flex-direction:column;">
+  <div class="card-stage">
+    <div class="memo-card" id="memo-card"><!-- rendered --></div>
+  </div>
+  <div id="share-wrap">
+    <h3>Share this card 💌</h3>
+    <p>Only someone with this link can open it — it's just for them.</p>
+    <div class="share-row">
+      <input type="text" id="share-input" readonly>
+      <button class="share-copy-btn" id="share-copy">Copy</button>
+      <button class="share-copy-btn secondary" id="share-download" type="button">Download HTML</button>
+    </div>
+    <p class="share-note" id="share-note"></p>
+  </div>
+  <p class="made-link">Made with ♡ — free &amp; private</p>
+  <div class="card-nav" id="card-nav">
+    <button class="card-nav-btn" id="cn-prev" disabled>← Prev</button>
+    <div class="card-dots" id="card-dots"></div>
+    <button class="card-nav-btn next-btn" id="cn-next">Next →</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="lightbox" id="photo-lightbox" aria-hidden="true">
+  <div class="lightbox-panel" role="dialog" aria-modal="true" aria-label="Enlarged photo">
+    <div class="lightbox-img-wrap">
+      <img class="lightbox-img" id="lightbox-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Enlarged card photo">
+    </div>
+    <div class="lightbox-actions">
+      <button class="lightbox-btn" id="lightbox-download" type="button">Download photo</button>
+      <button class="lightbox-btn" id="lightbox-close" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ────────────────────────────────────────────────────────────────
+const EVENTS = [
+  {
+    id: 'mothers-day',
+    label: "Mother's Day",
+    greeting: "Happy Mother's Day!",
+    emoji: '💐',
+    introTitle: 'Make a card for Mom',
+    introCopy: 'Choose the celebration, add their name, then answer a few prompts to turn your words into a card they can tap through.',
+    recipientPlaceholder: 'Mom, Grandma, Nana…',
+    photoVar: 'var(--photo-roses)'
+  },
+  {
+    id: 'fathers-day',
+    label: "Father's Day",
+    greeting: "Happy Father's Day!",
+    emoji: '☀️',
+    introTitle: 'Make a card for Dad',
+    introCopy: 'Choose the celebration, add their name, then answer a few prompts to turn your words into a card they can tap through.',
+    recipientPlaceholder: 'Dad, Grandpa, Pops…',
+    photoVar: 'var(--photo-golden)'
+  },
+  {
+    id: 'birthday',
+    label: 'Birthday',
+    greeting: 'Happy Birthday!',
+    emoji: '🎂',
+    introTitle: 'Make a birthday card',
+    introCopy: 'Choose the celebration, add their name, then answer a few prompts to turn your words into a card they can tap through.',
+    recipientPlaceholder: 'Their name',
+    photoVar: 'var(--photo-sunset)'
+  },
+  {
+    id: 'anniversary',
+    label: 'Anniversary',
+    greeting: 'Happy Anniversary!',
+    emoji: '🥂',
+    introTitle: 'Make an anniversary card',
+    introCopy: 'Choose the celebration, add their name, then answer a few prompts to turn your words into a card they can tap through.',
+    recipientPlaceholder: 'Their name',
+    photoVar: 'var(--photo-lavender)'
+  },
+  {
+    id: 'teacher-day',
+    label: 'Teacher Day',
+    greeting: 'Happy Teacher Day!',
+    emoji: '📚',
+    introTitle: 'Make a teacher card',
+    introCopy: 'Choose the celebration, add their name, then answer a few prompts to turn your words into a card they can tap through.',
+    recipientPlaceholder: 'Teacher, Coach, Mentor…',
+    photoVar: 'var(--photo-garden)'
+  },
+  {
+    id: 'custom',
+    label: 'Custom',
+    greeting: '',
+    emoji: '✨',
+    introTitle: 'Make a custom card',
+    introCopy: 'Choose the celebration, add their name, then answer a few prompts to turn your words into a card they can tap through.',
+    recipientPlaceholder: 'Their name',
+    photoVar: 'var(--photo-ocean)'
+  }
+];
+
+const QUESTIONS = [
+  {
+    id: 'memory',
+    text: "What's your favorite memory together?",
+    emoji: '📸',
+    color: '#f3eeff',
+    bubbleColor: '#ede4ff',
+    hasPhoto: true,
+    suggestions: [
+      "Making pancakes on Saturday mornings—we'd always burn the first one and laugh about it.",
+      "Taking the bus to the mall just to walk around and split a pretzel."
+    ],
+    placeholder: 'Type your memory here…'
+  },
+  {
+    id: 'phrase',
+    text: "What's a phrase they always say?",
+    emoji: '💬',
+    color: '#fff0f5',
+    bubbleColor: '#ffe0ec',
+    hasPhoto: true,
+    suggestions: [
+      "'Text me when you get home'—literally every time I leave.",
+      "They always say, 'Just bring a jacket, you'll thank me later.'"
+    ],
+    placeholder: 'Add your own moment…'
+  },
+  {
+    id: 'activity',
+    text: "What's your favorite activity to do together?",
+    emoji: '🎨',
+    color: '#fffde8',
+    bubbleColor: '#fdf5c0',
+    hasPhoto: true,
+    suggestions: [
+      "Walking around the neighborhood with coffee and gossiping about the neighbors.",
+      "Watching old rom-coms and yelling at the characters."
+    ],
+    placeholder: 'Add your own moment…'
+  },
+  {
+    id: 'proud',
+    text: "What's something you're proud of them for?",
+    emoji: '🏆',
+    color: '#fffce8',
+    bubbleColor: '#fdf5b0',
+    hasPhoto: true,
+    suggestions: [
+      "Going back to college after a packed season of life—it was wild to see them study at the kitchen table.",
+      "Starting a small business out of our garage and making it work."
+    ],
+    placeholder: 'Add your own moment…'
+  },
+  {
+    id: 'funny',
+    text: "What's your funniest memory together?",
+    emoji: '😂',
+    color: '#e8faff',
+    bubbleColor: '#c8f0ff',
+    hasPhoto: true,
+    suggestions: [
+      "Trying to put up IKEA furniture and somehow turning the shelves into a triangle.",
+      "That time they wore two different shoes to dinner and didn't notice until dessert."
+    ],
+    placeholder: 'Add your own moment…'
+  },
+  {
+    id: 'strength',
+    text: "What's their biggest strength?",
+    emoji: '💪',
+    color: '#eefff3',
+    bubbleColor: '#c8f0d8',
+    hasPhoto: true,
+    suggestions: [
+      "They're unshakable—like, no matter what happens, they figure it out.",
+      "Being the calm one when everyone else is freaking out."
+    ],
+    placeholder: 'Add your own moment…'
+  },
+  {
+    id: 'trait',
+    text: "What personality trait do you admire most?",
+    emoji: '✨',
+    color: '#fff5f8',
+    bubbleColor: '#ffdde8',
+    hasPhoto: true,
+    suggestions: [
+      "They're actually funny without trying—the best kind of funny.",
+      "They just… get people. Like they always know when someone's having a bad day."
+    ],
+    placeholder: 'Add your own moment…'
+  },
+  {
+    id: 'inherit',
+    text: "What trait did you inherit that you appreciate?",
+    emoji: '🎭',
+    color: '#f3eeff',
+    bubbleColor: '#e4d8ff',
+    hasPhoto: true,
+    suggestions: [
+      "They're super curious and ask questions about everything—I do that now too.",
+      "Their 'don't let them see you sweat' vibe."
+    ],
+    placeholder: 'Add your own moment…'
+  },
+  {
+    id: 'lesson',
+    text: "What's one lesson they taught you?",
+    emoji: '📚',
+    color: '#e8faff',
+    bubbleColor: '#c0eeff',
+    hasPhoto: true,
+    suggestions: [
+      "That you don't have to be loud to be strong.",
+      "To never settle just because something feels safe."
+    ],
+    placeholder: 'Add your own moment…'
+  },
+  {
+    id: 'future',
+    text: "What do you hope to do together in the future?",
+    emoji: '🎯',
+    color: '#fff0f5',
+    bubbleColor: '#ffd8e8',
+    hasPhoto: true,
+    suggestions: [
+      "Finally take that trip to the Pacific Northwest we always talk about.",
+      "Spend a whole weekend making their old recipes with zero rush."
+    ],
+    placeholder: 'Add your own moment…'
+  }
+];
+
+const DESIGNS = [
+  { id: 'roses',    label: 'Roses',    emoji: '🌹', cls: 'dp-roses' },
+  { id: 'golden',   label: 'Golden',   emoji: '✨', cls: 'dp-golden' },
+  { id: 'garden',   label: 'Garden',   emoji: '🌿', cls: 'dp-garden' },
+  { id: 'ocean',    label: 'Ocean',    emoji: '🌊', cls: 'dp-ocean' },
+  { id: 'lavender', label: 'Lavender', emoji: '💜', cls: 'dp-lavender' },
+  { id: 'sunset',   label: 'Sunset',   emoji: '🌅', cls: 'dp-sunset' },
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────
+let state = {
+  step: 0,          // current question index
+  answers: {},      // { questionId: string }
+  photos: {},       // { questionId: [base64, ...] }
+  eventId: 'mothers-day',
+  customEvent: '',
+  toName: '',
+  fromName: '',
+  design: null,
+  cardSlide: 0,
+  revealedSlides: new Set(),
+  activePhotos: {},
+  currentLightboxPhoto: null,
+};
+
+// ── UTILS ────────────────────────────────────────────────────────────────
+function uuid() {
+  return 'xxxx-xxxx-4xxx-yxxx-xxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function getEvent() {
+  return EVENTS.find(e => e.id === state.eventId) || EVENTS[0];
+}
+function getCustomGreeting(label) {
+  const clean = String(label || '').trim();
+  if (!clean) return 'Happy Special Day!';
+  if (/^happy\b/i.test(clean)) return clean.replace(/[.!?]*$/, '!');
+  if (/\bday\b/i.test(clean) || /\bbirthday\b/i.test(clean) || /\banniversary\b/i.test(clean)) {
+    return `Happy ${clean.replace(/[.!?]*$/, '')}!`;
+  }
+  return `Happy ${clean.replace(/[.!?]*$/, '')} Day!`;
+}
+function getGreeting() {
+  const event = getEvent();
+  return event.id === 'custom' ? getCustomGreeting(state.customEvent) : event.greeting;
+}
+function getEventLabel() {
+  const event = getEvent();
+  return event.id === 'custom' ? (state.customEvent.trim() || 'Special Day') : event.label;
+}
+function getPhotoAltText(slide) {
+  return slide && slide.question ? `Photo for ${slide.question}` : 'Card photo';
+}
+function fileSafeName(label) {
+  return String(label || 'photo').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'photo';
+}
+function showToast(msg, ms = 2000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), ms);
+}
+function switchScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── QUESTION RENDERER ────────────────────────────────────────────────────
+function renderQuestion(idx) {
+  const isIntro = idx === -1;
+  const qs = document.getElementById('q-screen');
+  const qInner = document.getElementById('q-inner');
+  const total = QUESTIONS.length;
+
+  document.getElementById('progress-bar').style.display = isIntro ? 'none' : 'block';
+  const pct = isIntro ? 0 : ((idx + 1) / total) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  if (isIntro) {
+    const event = getEvent();
+    qs.style.background = 'linear-gradient(160deg, #fdf0f6 0%, #f0ecff 100%)';
+    qs.style.setProperty('--intro-photo', event.photoVar || 'var(--photo-roses)');
+    qInner.innerHTML = `
+      <div class="intro-card">
+        <div class="intro-hero" aria-hidden="true"></div>
+        <h1>${esc(event.introTitle)}</h1>
+        <p class="intro-copy">${esc(event.introCopy)}</p>
+        <div class="event-grid" id="event-grid" aria-label="Choose the occasion">
+          ${EVENTS.map(e => `
+            <button type="button" class="event-card${state.eventId === e.id ? ' selected' : ''}" data-event-id="${e.id}">
+              <span class="event-emoji">${e.emoji}</span>
+              <span class="event-label">${esc(e.label)}</span>
+            </button>
+          `).join('')}
+        </div>
+        <div class="custom-event-wrap${state.eventId === 'custom' ? ' visible' : ''}" id="custom-event-wrap">
+          <label class="field-label" for="custom-event-input">Happy _____ Day</label>
+          <input type="text" class="text-input" id="custom-event-input" placeholder="Best Friend, Teacher Appreciation, Graduation…" maxlength="60" value="${esc(state.customEvent)}">
+        </div>
+        <div class="intro-fields">
+          <label>
+            <span class="field-label">Who is it for?</span>
+            <input type="text" class="text-input" id="to-name-input" placeholder="${esc(event.recipientPlaceholder)}" maxlength="50" value="${esc(state.toName)}">
+          </label>
+          <label>
+            <span class="field-label">From (optional)</span>
+            <input type="text" class="text-input" id="from-name-input" placeholder="Your name" maxlength="50" value="${esc(state.fromName)}">
+          </label>
+        </div>
+      </div>`;
+    document.getElementById('btn-back').style.visibility = 'hidden';
+    document.getElementById('btn-skip').style.display = 'none';
+    document.getElementById('btn-next').textContent = 'Start questions →';
+    document.getElementById('btn-next').disabled = false;
+
+    const toInput = document.getElementById('to-name-input');
+    const frInput = document.getElementById('from-name-input');
+    const customInput = document.getElementById('custom-event-input');
+    const checkReady = () => {
+      state.toName = toInput.value.trim();
+      state.fromName = frInput.value.trim();
+      if (customInput) state.customEvent = customInput.value.trim();
+      document.getElementById('btn-next').disabled = !(state.toName && (state.eventId !== 'custom' || state.customEvent));
+    };
+    toInput.addEventListener('input', checkReady);
+    frInput.addEventListener('input', checkReady);
+    if (customInput) customInput.addEventListener('input', checkReady);
+    document.querySelectorAll('.event-card').forEach(card => {
+      card.addEventListener('click', () => {
+        checkReady();
+        state.eventId = card.dataset.eventId;
+        renderQuestion(-1);
+      });
+    });
+    checkReady();
+    return;
+  }
+
+  const q = QUESTIONS[idx];
+  qs.style.background = q.color;
+  const existing = state.answers[q.id] || '';
+  const thumbsHtml = buildPhotoThumbs(q.id);
+
+  qInner.innerHTML = `
+    <div class="q-title">
+      <span class="q-emoji">${q.emoji}</span>
+      <span>${esc(q.text)}</span>
+    </div>
+    <div class="suggestions">
+      ${q.suggestions.map((s, si) => `
+        <div class="bubble" data-idx="${si}" style="background:${q.bubbleColor};">${esc(s)}</div>
+      `).join('')}
+    </div>
+    <div class="q-textarea-wrap">
+      <textarea class="q-textarea" id="q-textarea" placeholder="${esc(q.placeholder)}" maxlength="400">${esc(existing)}</textarea>
+    </div>
+    ${q.hasPhoto ? `
+    <div class="photo-upload-zone" id="photo-zone">
+      <span>📷</span>
+      <p>Tap to add up to 3 photos for this memory (optional)</p>
+      <input type="file" class="photo-input" id="photo-file-input" accept="image/*" multiple>
+    </div>
+    <div class="photo-thumbs" id="photo-thumbs">${thumbsHtml}</div>
+    ` : ''}
+  `;
+
+  // Bubble click → populate textarea
+  qInner.querySelectorAll('.bubble').forEach(b => {
+    b.addEventListener('click', () => {
+      const ta = document.getElementById('q-textarea');
+      ta.value = b.textContent;
+      state.answers[q.id] = ta.value;
+      qInner.querySelectorAll('.bubble').forEach(x => x.classList.remove('selected'));
+      b.classList.add('selected');
+      updateNextButton();
+    });
+    if (existing && b.textContent === existing) b.classList.add('selected');
+  });
+
+  // Textarea input
+  document.getElementById('q-textarea').addEventListener('input', e => {
+    state.answers[q.id] = e.target.value;
+    qInner.querySelectorAll('.bubble').forEach(bub => {
+      bub.classList.toggle('selected', bub.textContent === e.target.value);
+    });
+    updateNextButton();
+  });
+
+  // Photo zone
+  if (q.hasPhoto) {
+    document.getElementById('photo-zone').addEventListener('click', () => {
+      document.getElementById('photo-file-input').click();
+    });
+    document.getElementById('photo-file-input').addEventListener('change', async e => {
+      const files = Array.from(e.target.files);
+      const existing = state.photos[q.id] || [];
+      const available = 3 - existing.length;
+      for (const f of files.slice(0, available)) {
+        const b64 = await resizeImg(await toBase64(f));
+        if (!state.photos[q.id]) state.photos[q.id] = [];
+        state.photos[q.id].push(b64);
+      }
+      document.getElementById('photo-thumbs').innerHTML = buildPhotoThumbs(q.id);
+      bindThumbRemovals(q.id);
+      e.target.value = '';
+    });
+    bindThumbRemovals(q.id);
+  }
+
+  document.getElementById('btn-back').style.visibility = 'visible';
+  document.getElementById('btn-skip').style.display = '';
+  document.getElementById('btn-next').textContent = idx < QUESTIONS.length - 1 ? 'Next →' : 'Pick a photo theme →';
+  document.getElementById('btn-next').disabled = false;
+
+  // Count answered for "need 3" gate on last question
+  updateNextButton();
+}
+
+function updateNextButton() {
+  const answered = QUESTIONS.filter(q => (state.answers[q.id] || '').trim()).length;
+  const isLast = state.step === QUESTIONS.length - 1;
+  const btn = document.getElementById('btn-next');
+  if (isLast && answered < 3) {
+    btn.textContent = `← Answer at least 3 questions`;
+    btn.disabled = true;
+  } else if (isLast) {
+    btn.textContent = 'Pick a photo theme →';
+    btn.disabled = false;
+  }
+}
+
+function buildPhotoThumbs(qid) {
+  const photos = state.photos[qid] || [];
+  return photos.map((src, i) => `
+    <div class="photo-thumb-wrap" data-idx="${i}">
+      <img src="${src}" alt="photo">
+      <button class="remove-thumb" data-qid="${qid}" data-i="${i}">×</button>
+    </div>`).join('');
+}
+
+function bindThumbRemovals(qid) {
+  document.querySelectorAll('.remove-thumb').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const i = parseInt(btn.dataset.i);
+      state.photos[qid].splice(i, 1);
+      document.getElementById('photo-thumbs').innerHTML = buildPhotoThumbs(qid);
+      bindThumbRemovals(qid);
+    });
+  });
+}
+
+// ── PHOTO HELPERS ────────────────────────────────────────────────────────
+function toBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+function resizeImg(dataUrl, maxW = 720, maxH = 720, q = 0.72) {
+  return new Promise(res => {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.width, h = img.height;
+      if (w > maxW || h > maxH) {
+        const r = Math.min(maxW / w, maxH / h);
+        w = Math.round(w * r); h = Math.round(h * r);
+      }
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      res(c.toDataURL('image/jpeg', q));
+    };
+    img.src = dataUrl;
+  });
+}
+function downloadPhoto(src, label = 'card-photo') {
+  const a = document.createElement('a');
+  const extMatch = /^data:image\/([a-zA-Z0-9.+-]+);/.exec(src || '');
+  const ext = extMatch ? extMatch[1].replace('jpeg', 'jpg') : 'jpg';
+  a.href = src;
+  a.download = `${fileSafeName(label)}.${ext}`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+function openLightbox(src, label) {
+  state.currentLightboxPhoto = { src, label };
+  const box = document.getElementById('photo-lightbox');
+  const img = document.getElementById('lightbox-img');
+  img.src = src;
+  img.alt = label || 'Enlarged card photo';
+  box.classList.add('open');
+  box.setAttribute('aria-hidden', 'false');
+}
+function closeLightbox() {
+  const box = document.getElementById('photo-lightbox');
+  box.classList.remove('open');
+  box.setAttribute('aria-hidden', 'true');
+  document.getElementById('lightbox-img').src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+  state.currentLightboxPhoto = null;
+}
+function getCardData() {
+  return {
+    toName: state.toName,
+    fromName: state.fromName,
+    eventId: state.eventId,
+    customEvent: state.customEvent,
+    design: state.design,
+    slides: state.slides || []
+  };
+}
+function bytesToBase64(bytes) {
+  let binary = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  }
+  return btoa(binary);
+}
+function base64ToBytes(b64) {
+  const binary = atob(b64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+function encodeCardPayload(card) {
+  const json = JSON.stringify(card);
+  const b64 = bytesToBase64(new TextEncoder().encode(json));
+  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+}
+function decodeCardPayload(payload) {
+  const cleaned = String(payload || '').trim().replace(/\s/g, '+');
+  const normalized = cleaned.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = normalized + '='.repeat((4 - normalized.length % 4) % 4);
+  const json = new TextDecoder().decode(base64ToBytes(padded));
+  return JSON.parse(json);
+}
+function makeShareUrl(card) {
+  const base = location.href.split('#')[0].split('?')[0];
+  return `${base}#card=${encodeCardPayload(card)}`;
+}
+async function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch(e) {}
+  }
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly', '');
+  ta.style.position = 'fixed';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  ta.setSelectionRange(0, ta.value.length);
+  const ok = document.execCommand('copy');
+  ta.remove();
+  return ok;
+}
+function downloadCardHtml(card) {
+  const payload = JSON.stringify(card).replace(/</g, '\\u003c');
+  const payloadScript = `<script>window.__MEMO_CARD_PAYLOAD__=${payload};<\/script>\n`;
+  const source = document.documentElement.outerHTML.replace(/<script>window\.__MEMO_CARD_PAYLOAD__=[\s\S]*?<\/script>\s*/g, '');
+  const html = '<!DOCTYPE html>\n' + source.replace('</body>', `${payloadScript}</body>`);
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${fileSafeName(getEventLabel() + '-' + state.toName)}-card.html`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+function updateShareNote(shareUrl) {
+  const note = document.getElementById('share-note');
+  const hasPhotos = (state.slides || []).some(slide => (slide.photos || []).length);
+  const longLink = shareUrl.length > 7000;
+  note.classList.toggle('warn', longLink);
+  if (longLink) {
+    note.textContent = 'This card has enough embedded photo data that some messaging apps may shorten or break the link. Use Download HTML for the safest share or GitHub Pages upload.';
+  } else if (hasPhotos) {
+    note.textContent = 'This link stores the card in the URL hash so it works on GitHub Pages. For the most reliable photo-heavy share, Download HTML also creates a standalone card file.';
+  } else {
+    note.textContent = 'GitHub Pages ready: the card data is stored after #card=, so the static page can open it without a server.';
+  }
+}
+
+// ── NAV ──────────────────────────────────────────────────────────────────
+document.getElementById('btn-next').addEventListener('click', () => {
+  if (state.step === -1) {
+    // intro → first question
+    state.step = 0;
+    renderQuestion(0);
+    return;
+  }
+  if (state.step < QUESTIONS.length - 1) {
+    state.step++;
+    renderQuestion(state.step);
+  } else {
+    // go to design
+    showDesignScreen();
+  }
+});
+
+document.getElementById('btn-back').addEventListener('click', () => {
+  if (state.step > 0) { state.step--; renderQuestion(state.step); }
+  else { state.step = -1; renderQuestion(-1); }
+});
+
+document.getElementById('btn-skip').addEventListener('click', () => {
+  if (state.step < QUESTIONS.length - 1) {
+    state.step++;
+    renderQuestion(state.step);
+  }
+});
+
+// ── DESIGN SCREEN ────────────────────────────────────────────────────────
+function showDesignScreen() {
+  switchScreen('screen-design');
+  const grid = document.getElementById('design-grid');
+  grid.innerHTML = DESIGNS.map(d => `
+    <div class="design-card ${d.cls}" data-id="${d.id}">
+      <div class="design-preview"><span>${d.emoji}</span></div>
+      <div class="design-name">${d.label}</div>
+    </div>`).join('');
+
+  grid.querySelectorAll('.design-card').forEach(card => {
+    card.addEventListener('click', () => {
+      grid.querySelectorAll('.design-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      state.design = card.dataset.id;
+      document.getElementById('btn-design-continue').disabled = false;
+    });
+  });
+}
+
+document.getElementById('btn-design-continue').addEventListener('click', () => {
+  if (!state.design) return;
+  buildAndShowCard();
+});
+
+// ── CARD BUILDER ─────────────────────────────────────────────────────────
+function buildAndShowCard() {
+  switchScreen('screen-view');
+  document.getElementById('progress-bar').style.display = 'none';
+
+  const answeredQs = QUESTIONS.filter(q => (state.answers[q.id] || '').trim());
+  state.slides = answeredQs.map(q => ({
+    id: q.id,
+    question: q.text,
+    answer: state.answers[q.id] || '',
+    photos: state.photos[q.id] || []
+  }));
+  state.cardSlide = 0;
+  state.revealedSlides = new Set();
+  state.activePhotos = {};
+
+  renderCardSlide(0);
+  renderDots();
+  setupCardNav();
+
+  const card = getCardData();
+  let shareUrl = '';
+  try {
+    shareUrl = makeShareUrl(card);
+  } catch(e) {
+    shareUrl = '';
+  }
+
+  document.getElementById('share-input').value = shareUrl || 'Could not encode this card — use Download HTML instead.';
+  document.getElementById('share-wrap').style.display = 'block';
+  updateShareNote(shareUrl);
+
+  const copyBtn = document.getElementById('share-copy');
+  const newBtn = copyBtn.cloneNode(true);
+  copyBtn.parentNode.replaceChild(newBtn, copyBtn);
+  newBtn.disabled = !shareUrl;
+  newBtn.addEventListener('click', async () => {
+    if (!shareUrl) return;
+    const ok = await copyText(shareUrl);
+    newBtn.textContent = ok ? 'Copied!' : 'Select link';
+    newBtn.classList.toggle('ok', ok);
+    if (!ok) document.getElementById('share-input').select();
+    setTimeout(() => { newBtn.textContent = 'Copy'; newBtn.classList.remove('ok'); }, 2000);
+  });
+
+  const dlBtn = document.getElementById('share-download');
+  const newDlBtn = dlBtn.cloneNode(true);
+  dlBtn.parentNode.replaceChild(newDlBtn, dlBtn);
+  newDlBtn.addEventListener('click', () => {
+    downloadCardHtml(card);
+    showToast('Downloaded card HTML');
+  });
+}
+
+function renderCardSlide(slideIdx) {
+  const card = document.getElementById('memo-card');
+  const theme = 'theme-' + (state.design || 'roses');
+  card.className = 'memo-card ' + theme;
+  const finalSlideIdx = state.slides.length + 1;
+
+  if (slideIdx === 0) {
+    card.innerHTML = `
+      <div class="card-cover slide-motion">
+        <div class="card-cover-bg" style="background-image:linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.52)), var(--card-photo)"></div>
+        <div class="card-cover-content">
+          <p class="to-label">A ${esc(getEventLabel())} card for</p>
+          <p class="to-name">${esc(state.toName)}</p>
+          <p class="tap-hint"><span class="tap-pulse"></span> Tap Next to open</p>
+        </div>
+      </div>`;
+  } else if (slideIdx === finalSlideIdx) {
+    card.innerHTML = `
+      <div class="final-slide slide-motion">
+        <div class="final-content">
+          <h2 class="final-greeting">${esc(getGreeting())}</h2>
+          ${state.fromName ? `<p class="final-from">From ${esc(state.fromName)}</p>` : ''}
+        </div>
+      </div>`;
+  } else {
+    const slide = state.slides[slideIdx - 1];
+    if (!slide) return;
+    const revealed = state.revealedSlides.has(slideIdx);
+    const photosArr = slide.photos || [];
+    const activeIdx = photosArr.length ? Math.min(state.activePhotos[slideIdx] || 0, photosArr.length - 1) : 0;
+    const activePhoto = photosArr[activeIdx];
+    const photoLabel = `${state.toName || 'card'} ${slide.question || 'photo'} ${activeIdx + 1}`;
+    const design = DESIGNS.find(d => d.id === state.design) || DESIGNS[0];
+    const photoPanel = activePhoto ? `
+      <div class="photo-panel">
+        <button class="photo-main-button" id="photo-main-button" type="button" aria-label="Enlarge this photo">
+          <img src="${activePhoto}" alt="${esc(getPhotoAltText(slide))}">
+        </button>
+        <div class="photo-count">${activeIdx + 1} / ${photosArr.length}</div>
+        <div class="photo-actions">
+          <button class="photo-action-btn" id="photo-enlarge" type="button" title="Enlarge photo" aria-label="Enlarge photo">↗</button>
+          <button class="photo-action-btn" id="photo-download" type="button" title="Download photo" aria-label="Download photo">↓</button>
+        </div>
+        ${photosArr.length > 1 ? `
+          <div class="photo-thumbs-view" aria-label="Choose photo">
+            ${photosArr.map((p, i) => `
+              <button class="photo-thumb-btn${i === activeIdx ? ' active' : ''}" type="button" data-photo-index="${i}" aria-label="Show photo ${i + 1}">
+                <img src="${p}" alt="">
+              </button>
+            `).join('')}
+          </div>` : ''}
+      </div>` : `
+      <div class="photo-panel" aria-hidden="true">
+        <div class="theme-photo-copy">
+          <span>${esc(getEventLabel())}</span>
+          <strong>${esc(design.label)} theme</strong>
+        </div>
+      </div>`;
+    card.innerHTML = `
+      <div class="card-slide split-slide slide-motion">
+        ${photoPanel}
+        <div class="message-panel">
+          <div class="slide-question">${esc(slide.question)}</div>
+          <div class="slide-answer-area" id="slide-tap-area" ${revealed ? 'aria-label="Answer revealed"' : 'role="button" tabindex="0" aria-label="Tap to reveal the answer"'}>
+            <div class="tap-reveal${revealed ? ' hidden' : ''}" id="tap-reveal">
+              <div class="tap-reveal-icon">👆</div>
+              <div class="tap-reveal-text">Tap to reveal the answer</div>
+            </div>
+            <p class="slide-answer${revealed ? ' revealed' : ''}" id="slide-answer">${esc(slide.answer)}</p>
+            ${revealed && activePhoto ? '<p class="reveal-note">Tap the photo to enlarge it, or use the download button.</p>' : ''}
+          </div>
+        </div>
+      </div>`;
+
+    const reveal = () => {
+      if (!state.revealedSlides.has(slideIdx)) {
+        state.revealedSlides.add(slideIdx);
+        const tr = document.getElementById('tap-reveal');
+        if (tr) tr.classList.add('hidden');
+        const sa = document.getElementById('slide-answer');
+        if (sa) sa.classList.add('revealed');
+        const area = document.getElementById('slide-tap-area');
+        if (area) area.setAttribute('aria-label', 'Answer revealed');
+        renderCardSlide(slideIdx);
+      }
+    };
+    const tapArea = document.getElementById('slide-tap-area');
+    if (tapArea && !revealed) {
+      tapArea.addEventListener('click', reveal);
+      tapArea.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          reveal();
+        }
+      });
+    }
+    if (activePhoto) {
+      const open = () => openLightbox(activePhoto, photoLabel);
+      document.getElementById('photo-main-button').addEventListener('click', open);
+      document.getElementById('photo-enlarge').addEventListener('click', open);
+      document.getElementById('photo-download').addEventListener('click', () => downloadPhoto(activePhoto, photoLabel));
+      document.querySelectorAll('.photo-thumb-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          state.activePhotos[slideIdx] = parseInt(btn.dataset.photoIndex, 10);
+          renderCardSlide(slideIdx);
+        });
+      });
+    }
+  }
+}
+
+function renderDots() {
+  const total = state.slides.length + 2; // cover + final greeting
+  const dots = document.getElementById('card-dots');
+  dots.innerHTML = Array.from({ length: total }, (_, i) =>
+    `<div class="card-dot${i === state.cardSlide ? ' active' : ''}" data-i="${i}"></div>`
+  ).join('');
+}
+
+function setupCardNav() {
+  const oldPrev = document.getElementById('cn-prev');
+  const oldNext = document.getElementById('cn-next');
+  const prev = oldPrev.cloneNode(true);
+  const next = oldNext.cloneNode(true);
+  oldPrev.parentNode.replaceChild(prev, oldPrev);
+  oldNext.parentNode.replaceChild(next, oldNext);
+  const total = state.slides.length + 2;
+
+  const update = () => {
+    prev.disabled = state.cardSlide === 0;
+    next.disabled = false;
+    next.textContent = state.cardSlide === total - 1 ? 'Done \u2713' : 'Next \u2192';
+    renderDots();
+    renderCardSlide(state.cardSlide);
+  };
+
+  prev.addEventListener('click', () => { if (state.cardSlide > 0) { state.cardSlide--; update(); } });
+  next.addEventListener('click', () => {
+    if (state.cardSlide < total - 1) { state.cardSlide++; update(); }
+    else { showToast("That's the whole card! \uD83D\uDC8C"); }
+  });
+  update();
+}
+
+document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+document.getElementById('lightbox-download').addEventListener('click', () => {
+  if (!state.currentLightboxPhoto) return;
+  downloadPhoto(state.currentLightboxPhoto.src, state.currentLightboxPhoto.label);
+});
+document.getElementById('photo-lightbox').addEventListener('click', e => {
+  if (e.target.id === 'photo-lightbox') closeLightbox();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+});
+
+// ── CARD VIEWER (from URL) ────────────────────────────────────────────────
+function viewCard(card) {
+  document.getElementById('progress-bar').style.display = 'none';
+  switchScreen('screen-view');
+
+  state.toName = card.toName;
+  state.fromName = card.fromName;
+  state.eventId = card.eventId || 'mothers-day';
+  state.customEvent = card.customEvent || '';
+  state.design = card.design || 'roses';
+  state.slides = (card.slides || []).map(s => ({
+    id: s.id, question: s.question, answer: s.answer, photos: s.photos || []
+  }));
+  state.cardSlide = 0;
+  state.revealedSlides = new Set();
+  state.activePhotos = {};
+
+  renderCardSlide(0);
+  renderDots();
+  setupCardNav();
+
+  document.getElementById('share-wrap').style.display = 'none';
+}
+
+// ── ROUTER ───────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.__MEMO_CARD_PAYLOAD__) {
+    try {
+      viewCard(window.__MEMO_CARD_PAYLOAD__);
+      return;
+    } catch(e) {
+      showError();
+      return;
+    }
+  }
+  const params = new URLSearchParams(location.search);
+  const hashParams = new URLSearchParams(location.hash.replace(/^#/, ''));
+  const cardParam = hashParams.get('card') || params.get('card');
+  if (cardParam) {
+    try {
+      const card = decodeCardPayload(cardParam);
+      if (!card.slides || !card.toName) throw new Error('invalid');
+      viewCard(card);
+    } catch(e) {
+      showError();
+    }
+  } else {
+    state.step = -1;
+    renderQuestion(-1);
+  }
+});
+
+function showError() {
+  document.getElementById('screen-questions').innerHTML = `
+    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:2rem; text-align:center;">
+      <div style="font-size:3rem; margin-bottom:1rem;">💌</div>
+      <h2 style="font-family:var(--font-serif); font-weight:400; font-size:1.6rem; color:#1a0e18; margin-bottom:0.5rem;">Card not found</h2>
+      <p style="color:rgba(0,0,0,0.45); margin-bottom:1.5rem;">This link may have expired or the card doesn't exist yet.</p>
+      <a href="?" style="padding:12px 28px; background:var(--pink); color:white; border-radius:50px; text-decoration:none; font-weight:500; font-family:var(--font-sans);">Make a new card →</a>
+    </div>`;
+}
+</script>
+</body>
+</html>
