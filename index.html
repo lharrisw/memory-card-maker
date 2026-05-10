@@ -731,6 +731,7 @@ body {
   padding: 1.1rem;
   box-shadow: 0 10px 36px rgba(0,0,0,0.12);
   pointer-events: auto;
+  overflow: hidden;
 }
 #share-wrap.collapsed {
   width: auto;
@@ -755,12 +756,18 @@ body {
   margin: 0 2rem 0.35rem; color: #1a0e18;
 }
 #share-wrap p { font-size: 0.82rem; color: rgba(0,0,0,0.45); margin-bottom: 0.9rem; }
-.share-row { display: flex; gap: 6px; }
+.share-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
+}
 .share-row input {
   flex: 1; padding: 9px 12px; border: 1px solid rgba(0,0,0,0.12);
   border-radius: 8px; font-size: 0.82rem; font-family: var(--font-sans);
   color: rgba(0,0,0,0.6); background: #fafafa; outline: none;
+  min-width: 0;
 }
+#share-download { grid-column: 1 / -1; }
 .share-copy-btn {
   padding: 9px 16px; background: var(--pink); color: white;
   border: none; border-radius: 8px; font-family: var(--font-sans);
@@ -967,7 +974,8 @@ body {
     border-radius: 14px;
     padding: 0.9rem;
   }
-  .share-row { flex-direction: column; }
+  .share-row { grid-template-columns: 1fr; }
+  #share-download { grid-column: auto; }
   .share-row input,
   .share-copy-btn { width: 100%; min-height: 44px; }
   .card-nav-btn { font-size: 0.82rem; padding: 11px 8px; }
@@ -1685,8 +1693,11 @@ async function copyText(text) {
 function downloadCardHtml(card) {
   const payload = JSON.stringify(card).replace(/</g, '\\u003c');
   let source = document.documentElement.outerHTML;
-  source = source.replace(/<script[^>]*>window\.__MEMO_CARD_PAYLOAD__=[\s\S]*?<\/script>\s*/gi, '');
-  const payloadScript = `<script>window.__MEMO_CARD_PAYLOAD__=${payload};<\/script>\n`;
+  const payloadPattern = new RegExp('<scr' + 'ipt[^>]*>window\\.__MEMO_CARD_PAYLOAD__=[\\s\\S]*?<' + '/scr' + 'ipt>\\s*', 'gi');
+  source = source.replace(payloadPattern, '');
+  const payloadOpen = '<scr' + 'ipt>';
+  const payloadClose = '<' + '/scr' + 'ipt>';
+  const payloadScript = `${payloadOpen}window.__MEMO_CARD_PAYLOAD__=${payload};${payloadClose}\n`;
   const html = '<!DOCTYPE html>\n' + source.replace('</head>', payloadScript + '</head>');
   const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
   const url = URL.createObjectURL(blob);
